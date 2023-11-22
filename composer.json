@@ -14,7 +14,7 @@
   },
   "require": {
     "php": ">=8.2",
-    "discommand2/core": "dev-main"
+    "discommand2/core": "dev-feature/initial-brain-class"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
