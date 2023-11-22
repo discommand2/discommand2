@@ -1,0 +1,4 @@
+{
+    "path": "php://stdout",
+    "level": "DEBUG"
+}
