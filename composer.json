@@ -16,11 +16,6 @@
     "php": ">=8.2"
   },
   "require-dev": {},
-  "autoload": {
-    "psr-4": {
-      "Discommand2\\": "src/"
-    }
-  },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "version": "2.0.0"
