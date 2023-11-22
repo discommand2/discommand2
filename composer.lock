@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e54eff6327f0c49b54a17896a440dcbd",
-    "packages": [],
+    "content-hash": "95ea1ee768d8db815dfca02bb650aef1",
+    "packages": [
+        {
+            "name": "discommand2/core",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/discommand2/core.git",
+                "reference": "684a83dde1c9594024cad4b8d6b70d27ef0544ad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/discommand2/core/zipball/684a83dde1c9594024cad4b8d6b70d27ef0544ad",
+                "reference": "684a83dde1c9594024cad4b8d6b70d27ef0544ad",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Discommand2\\Core\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Russell Purinton",
+                    "email": "russell.purinton@gmail.com"
+                }
+            ],
+            "description": "The Composer package that includes the core functionalities of the discommand2 system.",
+            "support": {
+                "discord": "https://discord.gg/yMs5vgvyV4",
+                "issues": "https://github.com/discommand2/core/issues",
+                "source": "https://github.com/discommand2/core/tree/main"
+            },
+            "time": "2023-11-21T23:29:01+00:00"
+        }
+    ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
