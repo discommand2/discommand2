@@ -50,9 +50,22 @@ class Discommand2
 
     public function upgrade($argv): bool
     {
+        [$plugin, $force] = $this->validateUpgrade($argv);
+        if (!$force) {
+            $confirmation = readline("[WARNING] Are you sure you want to upgrade$plugin beyond the current stable version? Please type 'yes' exactly to confirm: ");
+            if ($confirmation !== 'yes') {
+                $this->log->error("Upgrade Aborted!");
+                return false;
+            }
+        }
+        $this->log->info("Upgrading$plugin...");
+        return Composer::command('upgrade' . $plugin);
+    }
+
+    public function validateUpgrade($argv): array
+    {
         $plugin = '';
         $force = false;
-
         if (isset($argv[2]) && $argv[2] != '') {
             if ($argv[2] !== 'force') {
                 $force = isset($argv[3]) && $argv[3] === 'force';
@@ -62,17 +75,7 @@ class Discommand2
                 $force = true;
             }
         }
-
-        if (!$force) {
-            $confirmation = readline("[WARNING] Are you sure you want to upgrade$plugin beyond the current stable version? Please type 'yes' exactly to confirm: ");
-            if ($confirmation !== 'yes') {
-                $this->log->error("Upgrade Aborted!");
-                return false;
-            }
-        }
-
-        $this->log->info("Upgrading$plugin...");
-        return Composer::command('upgrade' . $plugin);
+        return [$plugin, $force];
     }
 
     public function install($argv): bool
@@ -93,25 +96,33 @@ class Discommand2
 
     public function create($argv): bool
     {
+        [$brainName, $brainPath] = $this->validateCreate($argv);
+        $url = $this->createFromTemplate($argv);
+        Git::command("submodule add -b main -f $url $brainPath") or throw new \Exception("Failed to clone $url");
+        Composer::command("install --working-dir=$brainPath") or throw new \Exception("Failed to install dependencies for $brainName");
+        $this->log->info("Brain $brainName created successfully!");
+        return true;
+    }
+
+    public function validateCreate($argv): array
+    {
         if (!isset($argv[2])) throw new \Exception("Brain name not specified!");
         if (!$this->validateBrainName($argv[2])) throw new \Exception("Invalid brain name!");
         $brainName = $argv[2];
         $basePath = Config::get('paths', 'brains');
         $brainPath = $basePath . '/' . $brainName;
         if (file_exists($brainPath)) throw new \Exception("Brain already exists! use config, start, or delete instead.");
+        return [$brainName, $brainPath];
+    }
 
+    public function createFromTemplate($argv): string
+    {
         if (!isset($argv[3]) || $argv[3] !== '') $argv[3] = "brain-template";
-        // if argument doesn't already include a / then prepend discommand2/
         if (strpos($argv[3], '/') === false) $argv[3] = 'discommand2/' . $argv[3];
-        // if th arg already starts with https then $url = that, otherwise prepend https://github.com/ and append .git
         if (strpos($argv[3], 'https://') === 0) $url = $argv[3];
         else $url = 'https://github.com/' . $argv[3] . '.git';
-        $this->log->info("Creating $brainName from template " . $url);
-
-        Git::command("submodule add -b main -f $url $brainPath") or throw new \Exception("Failed to clone $url");
-        Composer::command("install --working-dir=$brainPath") or throw new \Exception("Failed to install dependencies for $brainName");
-        $this->log->info("Brain $brainName created successfully!");
-        return true;
+        $this->log->info("Creating {$argv[2]} from template " . $url);
+        return $url;
     }
 
     public function start($argv): bool
