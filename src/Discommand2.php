@@ -133,7 +133,7 @@ class Discommand2
         return true;
     }
 
-    public function delete($argv)
+    public function delete($argv): bool
     {
         $brain = '';
         $force = false;
@@ -161,6 +161,7 @@ class Discommand2
 
         $this->log->info("Deleting " . $brain);
         // todo: delete brain
+        return true;
     }
 
     public function validateBrainName($name): bool
