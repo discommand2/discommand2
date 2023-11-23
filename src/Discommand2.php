@@ -112,11 +112,12 @@ class Discommand2
         Composer::command("install --working-dir=$brainPath") or throw new \Exception("Failed to install dependencies for $brainName");
     }
 
-    public function start($argv)
+    public function start($argv): bool
     {
         if (!isset($argv[2]) || $argv[2] === '') throw new \Exception("Brain name not specified!");
         $this->log->info("Waking " . $argv[2]);
         // todo: start brain
+        return true;
     }
 
     public function delete($argv)
