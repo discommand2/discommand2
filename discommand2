@@ -3,34 +3,49 @@
 
 namespace Discommand2;
 
-if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-    $composer = trim(shell_exec('which composer'));
-    if (!$composer) {
-        $composer = trim(shell_exec('which composer.phar'));
-        if (!$composer) {
-            echo "[INFO] Composer not found, installing...";
-            shell_exec('curl -sS https://getcomposer.org/installer | php');
-            if (!file_exists(__DIR__ . '/composer.phar')) {
-                echo "[ERROR] Composer download failed!\n";
-                exit(1);
-            }
-            echo " done!\n";
-            $composer = __DIR__ . '/composer.phar';
-        }
-    }
-    echo "[INFO] Installing dependencies...";
-    shell_exec("export COMPOSER_ALLOW_SUPERUSER=1 && export COMPOSER_NO_INTERACTION=1 && $composer install 2>&1");
+function requireFile(string $path)
+{
+    if (!file_exists($path)) throw new \Exception("Required $path not found!");
+    require_once($path);
+}
+
+function autoLoad()
+{
     if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-        echo "[ERROR] Composer install failed\n";
-        exit(1);
+        requireFile(__DIR__ . '/src/Composer.php');
+        Composer::command('install') or throw new \Exception("Composer install failed!");
     }
-    echo " done!\n";
+    requireFile(__DIR__ . '/vendor/autoload.php');
+    return class_exists('\Discommand2\Discommand2');
 }
 
 try {
-    require_once __DIR__ . '/vendor/autoload.php';
-    $discommand2 = new Discommand2($argv);
+    autoLoad() or throw new \Exception("Discommand2 failed to autoload!");
+    $log = LogFactory::create('discommand2') or throw new \Exception("Logger failed to create!");
 } catch (\Exception $e) {
-    echo "[ERROR] " . $e->getMessage() . "\n";
+    echo ("[FATAL] " . $e->getMessage() . "\n");
+    exit(1);
+} catch (\Throwable $e) {
+    echo ("[FATAL] " . $e->getMessage() . "\n");
+    exit(1);
+} catch (\Error $e) {
+    echo ("[FATAL] " . $e->getMessage() . "\n");
+    exit(1);
+}
+
+try {
+    $discommand2 = new Discommand2($log) or throw new \Exception("Unable to create Discommand2!");
+    $discommand2->run($argv) or throw new \Exception("Discommand2 failed to run!");
+} catch (\Exception $e) {
+    $log->debug($e->getTraceAsString());
+    $log->error($e->getMessage());
+    exit(1);
+} catch (\Throwable $e) {
+    $log->debug($e->getTraceAsString());
+    $log->error($e->getMessage());
+    exit(1);
+} catch (\Error $e) {
+    $log->debug($e->getTraceAsString());
+    $log->error($e->getMessage());
     exit(1);
 }

@@ -1,5 +1,5 @@
 {
-    "install": "/workspaces/dev-workspace/discommand2",
-    "home": "/home/codespace/brains",
+    "brains": "brains",
+    "logs": "logs",
     "temp": "/tmp"
 }
