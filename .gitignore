@@ -1,5 +1,5 @@
+composer
 composer.phar
-/vendor/
-.phpunit.cache
+vendor
 logs
-brains
+.phpunit*

@@ -91,7 +91,7 @@ class Discommand2
         return Composer::command('remove discommand2/' . ($argv[2]));
     }
 
-    public function create($argv)
+    public function create($argv): bool
     {
         if (!isset($argv[2])) throw new \Exception("Brain name not specified!");
         if (!$this->validateBrainName($argv[2])) throw new \Exception("Invalid brain name!");
@@ -110,6 +110,8 @@ class Discommand2
 
         Git::command("submodule add $url $brainPath") or throw new \Exception("Failed to clone $url to $brainPath");
         Composer::command("install --working-dir=$brainPath") or throw new \Exception("Failed to install dependencies for $brainName");
+        $this->log->info("Brain $brainName created successfully!");
+        return true;
     }
 
     public function start($argv): bool
