@@ -16,6 +16,11 @@
     "php": ">=8.2",
     "discommand2/core": "dev-feature/initial-brain-class"
   },
+  "autoload": {
+    "psr-4": {
+      "Discommand2\\": "src/"
+    }
+  },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "version": "2.0.0",
