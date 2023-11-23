@@ -135,33 +135,38 @@ class Discommand2
 
     public function delete($argv): bool
     {
-        $brain = '';
-        $force = false;
-
-        if (isset($argv[2]) && $argv[2] != '') {
-            if ($argv[2] !== 'force') {
-                $this->log->info("Deleting " . $argv[2]);
-                $brain = $argv[2];
-                $force = isset($argv[3]) && $argv[3] === 'force';
-            } else {
-                $force = true;
-            }
-        } else {
-            $this->log->error("Brain name is required");
-            return;
-        }
+        [$brainName, $brainPath, $force] = $this->validateDelete($argv);
 
         if (!$force) {
-            $confirmation = readline("[WARNING] Are you sure you want to delete " . $brain . " including their home directory, sql database(s), message history, and settings? Please type 'yes' exactly to confirm: ");
+            $confirmation = readline("[WARNING] Are you sure you want to delete " . $brainName . " including their home directory, sql database(s), message history, and settings? Please type 'yes' exactly to confirm: ");
             if ($confirmation !== 'yes') {
                 $this->log->error("Delete Aborted!");
-                return;
+                return false;
             }
         }
 
-        $this->log->info("Deleting " . $brain);
-        // todo: delete brain
+        $this->log->info("Deleting $brainName...");
+        Git::command("submodule deinit -f $brainPath") or throw new \Exception("Failed to deinit $brainName");
+        Git::command("rm -f $brainPath") or throw new \Exception("Failed to git remove $brainName");
+        $this->log->info("Brain $brainName deleted successfully!");
         return true;
+    }
+
+    public function validateDelete($argv): array
+    {
+        if (!isset($argv[2])) throw new \Exception("Brain name not specified!");
+        if (!$this->validateBrainName($argv[2])) throw new \Exception("Invalid brain name!");
+        $brainName = $argv[2];
+        $brainPath = $this->getPath($brainName);
+        if (!file_exists($brainPath)) throw new \Exception("$brainName doesn't exist to begin with!");
+        $force = isset($argv[3]) && $argv[3] === 'force';
+        return [$brainName, $brainPath, $force];
+    }
+
+    public function getPath($brainName): string
+    {
+        $basePath = Config::get('paths', 'brains');
+        return $basePath . '/' . $brainName;
     }
 
     public function validateBrainName($name): bool
