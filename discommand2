@@ -3,6 +3,8 @@
 
 namespace Discommand2;
 
+use Discommand2\Core\LogFactory;
+
 function requireFile(string $path)
 {
     if (!file_exists($path)) throw new \Exception("Required $path not found!");
