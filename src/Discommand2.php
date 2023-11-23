@@ -108,7 +108,7 @@ class Discommand2
         else $url = 'https://github.com/' . $argv[3] . '.git';
         $this->log->info("Creating $brainName from template " . $url);
 
-        Git::command("submodule add $url $brainPath") or throw new \Exception("Failed to clone $url to $brainPath");
+        Git::command("submodule add -b main -f $url $brainPath") or throw new \Exception("Failed to clone $url");
         Composer::command("install --working-dir=$brainPath") or throw new \Exception("Failed to install dependencies for $brainName");
         $this->log->info("Brain $brainName created successfully!");
         return true;
