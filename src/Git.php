@@ -14,8 +14,9 @@ class Git
     static function command(string $command): bool
     {
         $git = self::which_git();
-        $last_line = exec("$git $command 2>&1", $output, $exit_code);
-        if ($exit_code !== 0) throw new \Exception("Git command failed: $last_line");
+        exec("$git $command 2>&1", $output, $exit_code);
+        $output = array_map('trim', $output);
+        if ($exit_code !== 0) throw new \Exception("Git command failed: " . implode(" ", $output));
         return true;
     }
 }
