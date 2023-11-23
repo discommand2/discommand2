@@ -33,7 +33,7 @@ class Discommand2
             default:
                 echo "Usage: discommand2 [install|update|upgrade|remove|create|start|delete]\n";
         }
-        return false;
+        return true;
     }
 
     public function update($argv): bool
