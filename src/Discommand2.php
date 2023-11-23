@@ -29,14 +29,11 @@ class Discommand2
             case 'start':
                 return $this->start($argv);
             case 'delete':
-                if (!isset($argv[2]) || $argv[2] === '') throw new \Exception("Brain name not specified!");
-                $this->delete($argv);
-                break;
+                return $this->delete($argv);
             default:
                 echo "Usage: discommand2 [install|update|upgrade|remove|create|start|delete]\n";
-                break;
         }
-        return true;
+        return false;
     }
 
     public function update($argv): bool
@@ -111,8 +108,8 @@ class Discommand2
         else $url = 'https://github.com/' . $argv[3] . '.git';
         $this->log->info("Creating $brainName from template " . $url);
 
-        Git::command("clone $url $brainPath") or throw new \Exception("Failed to clone $url to $brainPath");
-        Composer::command("install --working-dir=$brainPath") or throw new \Exception("Failed to install dependencies for $brainPath");
+        Git::command("submodule add $url $brainPath") or throw new \Exception("Failed to clone $url to $brainPath");
+        Composer::command("install --working-dir=$brainPath") or throw new \Exception("Failed to install dependencies for $brainName");
     }
 
     public function start($argv)
@@ -148,7 +145,7 @@ class Discommand2
             }
         }
 
-        $this->log->info("Deleting brain " . $brain);
+        $this->log->info("Deleting " . $brain);
         // todo: delete brain
     }
 
