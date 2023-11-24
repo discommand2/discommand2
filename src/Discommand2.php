@@ -16,22 +16,20 @@ class Discommand2
     {
         $this->log->debug("Discommand2 run()", ["argv" => $argv]);
         switch ($argv[1] ?? '') {
+            case 'start':
+                return $this->start($argv);
             case 'update':
                 return $this->update($argv);
             case 'upgrade':
                 return $this->upgrade($argv);
-            case 'install':
-                return $this->install($argv);
-            case 'remove':
-                return $this->remove($argv);
             case 'create':
                 return $this->create($argv);
-            case 'start':
-                return $this->start($argv);
+            case 'config':
+                return $this->config($argv);
             case 'delete':
                 return $this->delete($argv);
             default:
-                echo "Usage: discommand2 [install|update|upgrade|remove|create|start|delete]\n";
+                echo "Usage: discommand2 [start|update|upgrade|create|config|delete] [brain] [force]\n";
         }
         return true;
     }
@@ -78,22 +76,6 @@ class Discommand2
         return [$plugin, $force];
     }
 
-    public function install($argv): bool
-    {
-        if (!isset($argv[2]) || $argv[2] === '') throw new \Exception("Plugin name not specified!");
-        $this->log->info("Installing " . $argv[2] . "...");
-        // if the argument doesn't already include a / then prepend discommand2/
-        if (strpos($argv[2], '/') === false) $argv[2] = 'discommand2/' . $argv[2];
-        return Composer::command('require ' . ($argv[2]));
-    }
-
-    public function remove($argv): bool
-    {
-        if (!isset($argv[2]) || $argv[2] === '') throw new \Exception("Plugin name not specified!");
-        $this->log->info("Removing " . $argv[2] . "...");
-        return Composer::command('remove discommand2/' . ($argv[2]));
-    }
-
     public function create($argv): bool
     {
         [$brainName, $brainPath] = $this->validateCreate($argv);
@@ -109,7 +91,7 @@ class Discommand2
         if (!isset($argv[2])) throw new \Exception("Brain name not specified!");
         if (!$this->validateBrainName($argv[2])) throw new \Exception("Invalid brain name!");
         $brainName = $argv[2];
-        $basePath = Config::get('paths', 'brains');
+        $basePath = Config::get('discommand2', 'brains');
         $brainPath = $basePath . '/' . $brainName;
         if (file_exists($brainPath)) throw new \Exception("$brainName already exists! use config, start, or delete instead.");
         return [$brainName, $brainPath];
@@ -132,12 +114,30 @@ class Discommand2
         if (!isset($argv[2]) || $argv[2] === '') throw new \Exception("Brain name not specified!");
         if (!$this->validateBrainName($argv[2])) throw new \Exception("Invalid brain name!");
         $brainName = $argv[2];
-        $cmd = Config::get('paths', 'brains') . '/' . $brainName . '/brain';
-        if (!file_exists($cmd)) throw new \Exception("$brainName doesn't exist!");
+        $cmd = $this->getPath($brainName) . '/brain';
+        if (!file_exists($cmd)) throw new \Exception("Could not find $brainName's brain!");
+        $cmd .= ' start';
         $this->log->info("Waking $brainName...");
-        $this->log->debug("Executing", ["cmd" => $cmd]);
+        $this->log->debug("passthru", ["cmd" => $cmd]);
         passthru($cmd, $exitCode);
-        $this->log->info("$brainName stopped thinking with exit code $exitCode!");
+        $this->log->info("$brainName stopped with exit code $exitCode!");
+        return $exitCode === 0;
+    }
+
+    public function config($argv): bool
+    {
+        if (!isset($argv[2]) || $argv[2] === '') throw new \Exception("Brain name not specified!");
+        if (!$this->validateBrainName($argv[2])) throw new \Exception("Invalid brain name!");
+        $brainName = $argv[2];
+        $brainPath = $this->getPath($brainName);
+        if (!file_exists($brainPath)) throw new \Exception("$brainName doesn't exist to begin with!");
+        $this->log->info("Configuring $brainName...");
+        $cmd = $brainPath . '/brain config';
+        $this->log->debug("exec", ["cmd" => $cmd]);
+        exec($cmd, $output, $exitCode);
+        $output = array_map('trim', $output);
+        if ($exitCode !== 0) throw new \Exception("Config command failed: " . implode(" ", $output));
+        $this->log->info("$brainName configured successfully!");
         return $exitCode === 0;
     }
 
@@ -174,7 +174,7 @@ class Discommand2
 
     public function getPath($brainName): string
     {
-        $basePath = Config::get('paths', 'brains');
+        $basePath = Config::get('discommand2', 'brains');
         return $basePath . '/' . $brainName;
     }
 
