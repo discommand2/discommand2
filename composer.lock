@@ -4,26 +4,27 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "20f491054fcb7e3bd5f8c01ca604f25d",
+    "content-hash": "1dc73dc8ba8a79a13e037fa3910be324",
     "packages": [
         {
             "name": "discommand2/core",
-            "version": "dev-feature/initial-brain-class",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/discommand2/core.git",
-                "reference": "dc7d3203c4fa0983a9356d09283776f9dfe3106a"
+                "reference": "b59fbff25bd1bc3bf7a8bf02740f3883b55c42fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/discommand2/core/zipball/dc7d3203c4fa0983a9356d09283776f9dfe3106a",
-                "reference": "dc7d3203c4fa0983a9356d09283776f9dfe3106a",
+                "url": "https://api.github.com/repos/discommand2/core/zipball/b59fbff25bd1bc3bf7a8bf02740f3883b55c42fa",
+                "reference": "b59fbff25bd1bc3bf7a8bf02740f3883b55c42fa",
                 "shasum": ""
             },
             "require": {
                 "monolog/monolog": "^3.5",
                 "php": ">=8.2"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -44,9 +45,9 @@
             "support": {
                 "discord": "https://discord.gg/yMs5vgvyV4",
                 "issues": "https://github.com/discommand2/core/issues",
-                "source": "https://github.com/discommand2/core/tree/feature/initial-brain-class"
+                "source": "https://github.com/discommand2/core/tree/main"
             },
-            "time": "2023-11-23T21:31:15+00:00"
+            "time": "2023-11-24T09:59:42+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -1817,9 +1818,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "discommand2/core": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

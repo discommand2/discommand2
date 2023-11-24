@@ -117,10 +117,12 @@ class Discommand2
 
     public function createFromTemplate($argv): string
     {
-        if (!isset($argv[3]) || $argv[3] !== '') $argv[3] = "brain-template";
+        if (!isset($argv[3]) || $argv[3] === '') $argv[3] = "brain-template";
         if (strpos($argv[3], '/') === false) $argv[3] = 'discommand2/' . $argv[3];
         if (strpos($argv[3], 'https://') === 0) $url = $argv[3];
-        else $url = 'https://github.com/' . $argv[3] . '.git';
+        else if (strpos($argv[3], 'git@github:') === 0) $url = $argv[3];
+        else if (strpos($argv[3], 'bitbucket.org:') === 0) $url = $argv[3];
+        else $url = 'git@github.com:' . $argv[3] . '.git';
         $this->log->info("Creating {$argv[2]} from template " . $url);
         return $url;
     }
