@@ -1,0 +1,6 @@
+[submodule "testBrain/"]
+	branch = main
+[submodule "brains/testBrain"]
+	path = brains/testBrain
+	url = https://github.com/discommand2/brain-template.git
+	branch = main

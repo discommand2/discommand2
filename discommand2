@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+
+namespace Discommand2;
+
+use Discommand2\Core\LogFactory;
+
+function requireFile(string $path)
+{
+    if (!file_exists($path)) throw new \Exception("Required $path not found!");
+    require_once($path);
+}
+
+function autoLoad()
+{
+    if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+        requireFile(__DIR__ . '/src/Composer.php');
+        Composer::command('install') or throw new \Exception("Composer install failed!");
+    }
+    requireFile(__DIR__ . '/vendor/autoload.php');
+    return class_exists('\Discommand2\Discommand2');
+}
+
+try {
+    autoLoad() or throw new \Exception("Discommand2 failed to autoload!");
+    $log = LogFactory::create('discommand2') or throw new \Exception("Logger failed to create!");
+} catch (\Exception $e) {
+    echo ("[FATAL] " . $e->getMessage() . "\n");
+    exit(1);
+} catch (\Throwable $e) {
+    echo ("[FATAL] " . $e->getMessage() . "\n");
+    exit(1);
+} catch (\Error $e) {
+    echo ("[FATAL] " . $e->getMessage() . "\n");
+    exit(1);
+}
+
+try {
+    $discommand2 = new Discommand2($log) or throw new \Exception("Unable to create Discommand2!");
+    $discommand2->run($argv) or throw new \Exception("Discommand2 failed to run!");
+} catch (\Exception $e) {
+    $log->debug($e->getMessage(), ["trace" => $e->getTrace()]);
+    $log->error($e->getMessage());
+    exit(1);
+} catch (\Throwable $e) {
+    $log->debug($e->getMessage(), ["trace" => $e->getTrace()]);
+    $log->error($e->getMessage());
+    exit(1);
+} catch (\Error $e) {
+    $log->debug($e->getMessage(), ["trace" => $e->getTrace()]);
+    $log->error($e->getMessage());
+    exit(1);
+}
