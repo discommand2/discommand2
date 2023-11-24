@@ -39,15 +39,15 @@ try {
     $discommand2 = new Discommand2($log) or throw new \Exception("Unable to create Discommand2!");
     $discommand2->run($argv) or throw new \Exception("Discommand2 failed to run!");
 } catch (\Exception $e) {
-    $log->debug($e->getTraceAsString());
+    $log->debug($e->getMessage(), ["trace" => $e->getTrace()]);
     $log->error($e->getMessage());
     exit(1);
 } catch (\Throwable $e) {
-    $log->debug($e->getTraceAsString());
+    $log->debug($e->getMessage(), ["trace" => $e->getTrace()]);
     $log->error($e->getMessage());
     exit(1);
 } catch (\Error $e) {
-    $log->debug($e->getTraceAsString());
+    $log->debug($e->getMessage(), ["trace" => $e->getTrace()]);
     $log->error($e->getMessage());
     exit(1);
 }

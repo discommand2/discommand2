@@ -14,7 +14,7 @@ class Discommand2
 
     public function run(array $argv): bool
     {
-        $this->log->debug("Discommand2 running with args " . print_r($argv, true));
+        $this->log->debug("Discommand2 run()", ["argv" => $argv]);
         switch ($argv[1] ?? '') {
             case 'update':
                 return $this->update($argv);
@@ -100,7 +100,7 @@ class Discommand2
         $url = $this->createFromTemplate($argv);
         Git::command("submodule add -b main -f $url $brainPath") or throw new \Exception("Failed to clone $url");
         Composer::command("install --working-dir=$brainPath") or throw new \Exception("Failed to install dependencies for $brainName");
-        $this->log->info("Brain $brainName created successfully!");
+        $this->log->info("$brainName created successfully!");
         return true;
     }
 
@@ -111,7 +111,7 @@ class Discommand2
         $brainName = $argv[2];
         $basePath = Config::get('paths', 'brains');
         $brainPath = $basePath . '/' . $brainName;
-        if (file_exists($brainPath)) throw new \Exception("Brain already exists! use config, start, or delete instead.");
+        if (file_exists($brainPath)) throw new \Exception("$brainName already exists! use config, start, or delete instead.");
         return [$brainName, $brainPath];
     }
 
@@ -128,9 +128,15 @@ class Discommand2
     public function start($argv): bool
     {
         if (!isset($argv[2]) || $argv[2] === '') throw new \Exception("Brain name not specified!");
-        $this->log->info("Waking " . $argv[2]);
-        // todo: start brain
-        return true;
+        if (!$this->validateBrainName($argv[2])) throw new \Exception("Invalid brain name!");
+        $brainName = $argv[2];
+        $cmd = Config::get('paths', 'brains') . '/' . $brainName . '/brain';
+        if (!file_exists($cmd)) throw new \Exception("$brainName doesn't exist!");
+        $this->log->info("Waking $brainName...");
+        $this->log->debug("Executing", ["cmd" => $cmd]);
+        passthru($cmd, $exitCode);
+        $this->log->info("$brainName stopped thinking with exit code $exitCode!");
+        return $exitCode === 0;
     }
 
     public function delete($argv): bool
@@ -148,7 +154,8 @@ class Discommand2
         $this->log->info("Deleting $brainName...");
         Git::command("submodule deinit -f $brainPath") or throw new \Exception("Failed to deinit $brainName");
         Git::command("rm -f $brainPath") or throw new \Exception("Failed to git remove $brainName");
-        $this->log->info("Brain $brainName deleted successfully!");
+        Git::command("gc --aggressive --prune=now") or throw new \Exception("Failed to git gc");
+        $this->log->info("$brainName deleted successfully!");
         return true;
     }
 
