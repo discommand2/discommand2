@@ -2,7 +2,9 @@
 
 namespace Discommand2;
 
-class composer
+Composer::autoLoad(__DIR__) or throw new \Exception("composer failed to autoload");
+
+class Composer
 {
     static function which_composer(string $wdir): string
     {
@@ -18,8 +20,8 @@ class composer
 
     static function download_composer(string $wdir): string
     {
-        $wdir = escapeshellarg($wdir);
-        exec("cd $wdir && curl -sS https://getcomposer.org/installer | php 2>&1", $output, $exit_code);
+        $wdire = escapeshellarg($wdir);
+        exec("cd $wdire && curl -sS https://getcomposer.org/installer | php 2>&1", $output, $exit_code);
         if ($exit_code !== 0) throw new \Exception("Composer download failed: " . implode("\n", $output));
         if (!file_exists("$wdir/composer.phar")) throw new \Exception("404 composer.phar not found");
         return "$wdir/composer.phar";
@@ -28,15 +30,10 @@ class composer
     static function command(string $wdir, string $command): bool
     {
         $composer = self::which_composer($wdir);
-        $wdir = escapeshellarg($wdir);
-        exec("cd $wdir && export COMPOSER_ALLOW_SUPERUSER=1 && export COMPOSER_NO_INTERACTION=1 && $composer $command 2>&1", $output, $exit_code);
+        $wdire = escapeshellarg($wdir);
+        exec("cd $wdire && export COMPOSER_ALLOW_SUPERUSER=1 && export COMPOSER_NO_INTERACTION=1 && $composer $command 2>&1", $output, $exit_code);
         if ($exit_code !== 0) {
-            // remove the first 3 lines and the last 4 lines
-            array_splice($output, 0, 3);
-            array_splice($output, -4);
-            // trim each line
-            $output = array_map('trim', $output);
-            throw new \Exception(implode(" ", $output));
+            throw new \Exception(implode("\n", $output));
         }
         return self::check_autoload_exists($wdir);
     }
@@ -44,5 +41,23 @@ class composer
     static function check_autoload_exists(string $wdir): bool
     {
         return file_exists("$wdir/vendor/autoload.php");
+    }
+
+
+    public static function requireFile(string $path)
+    {
+        if (!file_exists($path)) throw new \Exception("required $path not found");
+        require_once($path);
+    }
+
+    public static function autoLoad(string $wdir): bool
+    {
+        if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+            echo ("[INFO] composer autoload not found, attempting to install...");
+            self::command(__DIR__, 'install') or throw new \Exception("composer install failed");
+            echo ("done.\n");
+        }
+        self::requireFile(__DIR__ . '/vendor/autoload.php');
+        return class_exists('\Discommand2\Core\Brain');
     }
 }
