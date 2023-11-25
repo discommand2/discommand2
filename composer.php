@@ -7,7 +7,7 @@ class Composer
     static function which_composer(): string
     {
         if (file_exists(__DIR__ . '/composer.phar')) return __DIR__ . '/composer.phar';
-        if (file_exists(__DIR__ . '/composer')) return __DIR__ . '/../composer';
+        if (file_exists(__DIR__ . '/composer')) return __DIR__ . '/composer';
         $composer = trim(shell_exec('which composer') ?? '');
         if ($composer === '') $composer = trim(shell_exec('which composer.phar') ?? '');
         if ($composer === '') $composer = self::download_composer();

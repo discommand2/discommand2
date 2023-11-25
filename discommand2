@@ -1,9 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-namespace Discommand2;
-
-use Discommand2\Core\LogFactory;
+namespace Discommand2\Core;
 
 function requireFile(string $path)
 {
@@ -14,7 +12,7 @@ function requireFile(string $path)
 function autoLoad()
 {
     if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-        requireFile(__DIR__ . '/src/Composer.php');
+        requireFile(__DIR__ . '/composer.php');
         Composer::command('install') or throw new \Exception("Composer install failed!");
     }
     requireFile(__DIR__ . '/vendor/autoload.php');
