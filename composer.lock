@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/discommand2/core.git",
-                "reference": "9db4f2219aabc789ed2cae7f057584ee7052a259"
+                "reference": "df28cd10b0a0df8cab4ea3207142eeef57ea2c69"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/discommand2/core/zipball/9db4f2219aabc789ed2cae7f057584ee7052a259",
-                "reference": "9db4f2219aabc789ed2cae7f057584ee7052a259",
+                "url": "https://api.github.com/repos/discommand2/core/zipball/df28cd10b0a0df8cab4ea3207142eeef57ea2c69",
+                "reference": "df28cd10b0a0df8cab4ea3207142eeef57ea2c69",
                 "shasum": ""
             },
             "require": {
@@ -47,7 +47,7 @@
                 "issues": "https://github.com/discommand2/core/issues",
                 "source": "https://github.com/discommand2/core/tree/main"
             },
-            "time": "2023-11-24T14:21:35+00:00"
+            "time": "2023-11-25T05:38:33+00:00"
         },
         {
             "name": "monolog/monolog",

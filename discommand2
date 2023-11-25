@@ -3,9 +3,11 @@
 
 namespace Discommand2\Core;
 
+$myName = basename(__DIR__);
+
 function requireFile(string $path)
 {
-    if (!file_exists($path)) throw new \Exception("Required $path not found!");
+    if (!file_exists($path)) throw new \Exception("required $path not found");
     require_once($path);
 }
 
@@ -13,15 +15,15 @@ function autoLoad()
 {
     if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
         requireFile(__DIR__ . '/composer.php');
-        Composer::command('install') or throw new \Exception("Composer install failed!");
+        Composer::command('install') or throw new \Exception("composer install failed");
     }
     requireFile(__DIR__ . '/vendor/autoload.php');
-    return class_exists('\Discommand2\Discommand2');
+    return class_exists('\Discommand2\Core\Skull');
 }
 
 try {
-    autoLoad() or throw new \Exception("Discommand2 failed to autoload!");
-    $log = LogFactory::create('discommand2') or throw new \Exception("Logger failed to create!");
+    autoLoad() or throw new \Exception("failed to autoload");
+    $log = LogFactory::create($myName) or throw new \Exception("failed to create log");
 } catch (\Exception $e) {
     echo ("[FATAL] " . $e->getMessage() . "\n");
     exit(1);
@@ -34,8 +36,8 @@ try {
 }
 
 try {
-    $discommand2 = new Discommand2($log) or throw new \Exception("Unable to create Discommand2!");
-    $discommand2->run($argv) or throw new \Exception("Discommand2 failed to run!");
+    $skull = new Skull($log, $myName) or throw new \Exception("failed to create skull");
+    $skull->run($argv) or throw new \Exception("skull failed to run");
 } catch (\Exception $e) {
     $log->debug($e->getMessage(), ["trace" => $e->getTrace()]);
     $log->error($e->getMessage());
