@@ -52,9 +52,9 @@ class Composer
 
     public static function autoLoad(string $wdir): bool
     {
-        if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+        if (!file_exists("$wdir/vendor/autoload.php")) {
             echo ("[INFO] composer autoload not found, attempting to install...");
-            self::command(__DIR__, 'install') or throw new \Exception("composer install failed");
+            self::command($wdir, 'install') or throw new \Exception("composer install failed");
             echo ("done.\n");
         }
         self::requireFile(__DIR__ . '/vendor/autoload.php');
