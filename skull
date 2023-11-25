@@ -14,8 +14,9 @@ function requireFile(string $path)
 function autoLoad()
 {
     if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+        echo ("[INFO] composer autoload not found, attempting to install...\n");
         requireFile(__DIR__ . '/composer.php');
-        Composer::command('install') or throw new \Exception("composer install failed");
+        \Discommand2\composer::command(__DIR__, 'install') or throw new \Exception("composer install failed");
     }
     requireFile(__DIR__ . '/vendor/autoload.php');
     return class_exists('\Discommand2\Core\Skull');
@@ -36,7 +37,7 @@ try {
 }
 
 try {
-    $skull = new Skull($log, $myName) or throw new \Exception("failed to create skull");
+    $skull = new Skull($log, __DIR__, $myName) or throw new \Exception("failed to create skull");
     $skull->run($argv) or throw new \Exception("skull failed to run");
 } catch (\Exception $e) {
     $log->debug($e->getMessage(), ["trace" => $e->getTrace()]);
