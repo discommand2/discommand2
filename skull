@@ -14,9 +14,10 @@ function requireFile(string $path)
 function autoLoad()
 {
     if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-        echo ("[INFO] composer autoload not found, attempting to install...\n");
+        echo ("[INFO] composer autoload not found, attempting to install...");
         requireFile(__DIR__ . '/composer.php');
         \Discommand2\composer::command(__DIR__, 'install') or throw new \Exception("composer install failed");
+        echo ("done.\n");
     }
     requireFile(__DIR__ . '/vendor/autoload.php');
     return class_exists('\Discommand2\Core\Skull');

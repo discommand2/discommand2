@@ -28,7 +28,7 @@ class Composer
     {
         $composer = self::which_composer();
         $wdir = escapeshellarg($wdir);
-        exec("cd " . $wdir . "/.. && export COMPOSER_ALLOW_SUPERUSER=1 && export COMPOSER_NO_INTERACTION=1 && $composer $command 2>&1", $output, $exit_code);
+        exec("cd $wdir && export COMPOSER_ALLOW_SUPERUSER=1 && export COMPOSER_NO_INTERACTION=1 && $composer $command 2>&1", $output, $exit_code);
         if ($exit_code !== 0) {
             // remove the first 3 lines and the last 4 lines
             array_splice($output, 0, 3);
